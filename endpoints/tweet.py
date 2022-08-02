@@ -51,18 +51,14 @@ class Tweet(Endpoint):
         total_size = (45, 160)
         for i in text.split(' '):
             i += ' '
+            if total_size[0] > 1000:
+                total_size = (45, total_size[1] + 65)
             if i.startswith(('@', '#')):
-                if total_size[0] > 1000:
-                    total_size = (45, total_size[1] + 65)
                 render_text_with_emoji(base, canv, total_size, i, font=font, fill='#1b95e0')
-                y = canv.textsize(i, font=font)
-                total_size = (total_size[0] + y[0], total_size[1])
             else:
-                if total_size[0] > 1000:
-                    total_size = (45, total_size[1] + 65)
                 render_text_with_emoji(base, canv, total_size, i, font=font, fill='Black')
-                y = canv.textsize(i, font=font)
-                total_size = (total_size[0] + y[0], total_size[1])
+            y = canv.textsize(i, font=font)
+            total_size = (total_size[0] + y[0], total_size[1])
         render_text_with_emoji(base, canv, (160, 45), text2, font=font2, fill='Black')
         render_text_with_emoji(base, canv, (160, 95), text3, font=font3, fill='Grey')
         render_text_with_emoji(base, canv, (40, 570), text4, font=font3, fill='Grey')

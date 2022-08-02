@@ -38,7 +38,7 @@ class Endpoint(ABC):
         return round(self.avg_generation_times.sum(), 2)
 
     def run(self, key, **kwargs):
-        get_redis().incr(self.name + ':hits')
+        get_redis().incr(f'{self.name}:hits')
         start = perf_counter()
         res = self.generate(**kwargs)
         t = round((perf_counter() - start) * 1000, 2)  # Time in ms, formatted to 2dp
@@ -46,9 +46,9 @@ class Endpoint(ABC):
         k = r.table('keys').get(key).run(get_db())
         usage = k['usages'].get(self.name, 0) + 1
         r.table('keys').get(key) \
-            .update({"total_usage": k['total_usage'] + 1,
+                .update({"total_usage": k['total_usage'] + 1,
                      "usages": {self.name: usage}}) \
-            .run(get_db())
+                .run(get_db())
         return res
 
     @abstractmethod

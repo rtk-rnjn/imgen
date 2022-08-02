@@ -82,11 +82,14 @@ def index():
 
 @app.route('/stats', methods=['GET'])
 def stats():
-    data = {}
+    data = {
+        endpoint: {
+            'hits': get_redis().get(f'{endpoint}:hits') or 0,
+            'avg_gen_time': endpoints[endpoint].get_avg_gen_time(),
+        }
+        for endpoint in endpoints
+    }
 
-    for endpoint in endpoints:
-        data[endpoint] = {'hits': get_redis().get(endpoint + ':hits') or 0,
-                          'avg_gen_time': endpoints[endpoint].get_avg_gen_time()}
 
     return render_template('stats.html', data=data, active_stats="nav-active")
 
@@ -106,16 +109,25 @@ def docs():
 @ratelimit
 def api(endpoint):
     if endpoint not in endpoints:
-        return jsonify({'status': 404, 'error': 'Endpoint {} not found!'.format(endpoint)}), 404
+        return (
+            jsonify(
+                {'status': 404, 'error': f'Endpoint {endpoint} not found!'}
+            ),
+            404,
+        )
+
     if request.method == 'GET':
         text = request.args.get('text', '')
         avatars = [x for x in [request.args.get('avatar1', request.args.get('image', None)),
                                request.args.get('avatar2', None)] if x]
         usernames = [x for x in [request.args.get('username1', None), request.args.get('username2', None)] if x]
-        kwargs = {}
-        for arg in request.args:
-            if arg not in ['text', 'username1', 'username2', 'avatar1', 'avatar2']:
-                kwargs[arg] = request.args.get(arg)
+        kwargs = {
+            arg: request.args.get(arg)
+            for arg in request.args
+            if arg
+            not in ['text', 'username1', 'username2', 'avatar1', 'avatar2']
+        }
+
     else:
         if not request.is_json:
             return jsonify({'status': 400, 'message': 'when submitting a POST request you must provide data in the '
@@ -124,10 +136,12 @@ def api(endpoint):
         text = request_data.get('text', '')
         avatars = list(request_data.get('avatars', list(request_data.get('images', []))))
         usernames = list(request_data.get('usernames', []))
-        kwargs = {}
-        for arg in request_data:
-            if arg not in ['text', 'avatars', 'usernames']:
-                kwargs[arg] = request_data.get(arg)
+        kwargs = {
+            arg: request_data.get(arg)
+            for arg in request_data
+            if arg not in ['text', 'avatars', 'usernames']
+        }
+
     cache = endpoints[endpoint].bucket
     max_usage = endpoints[endpoint].rate
     e_r = endpoint_ratelimit(auth=request.headers.get('Authorization', None), cache=cache, max_usage=max_usage)
@@ -138,9 +152,10 @@ def api(endpoint):
                            'X-RateLimit-Reset': e_r['X-RateLimit-Reset'],
                            'Retry-After': e_r['Retry-After']}))
         return x
-    if endpoint == 'profile':
-        if request.headers.get('Authorization', None) != config.get('memer_token', None):
-            return jsonify({"error": 'This endpoint is limited to Dank Memer', 'status': 403}), 403
+    if endpoint == 'profile' and request.headers.get(
+        'Authorization', None
+    ) != config.get('memer_token', None):
+        return jsonify({"error": 'This endpoint is limited to Dank Memer', 'status': 403}), 403
     try:
         result = endpoints[endpoint].run(key=request.headers.get('authorization'),
                                          text=text,
@@ -156,7 +171,16 @@ def api(endpoint):
         traceback.print_exc()
         if 'sentry_dsn' in config:
             capture_exception(e)
-        return jsonify({'status': 400, 'error': str(e) + '. Are you missing a parameter?'}), 400
+        return (
+            jsonify(
+                {
+                    'status': 400,
+                    'error': f'{str(e)}. Are you missing a parameter?',
+                }
+            ),
+            400,
+        )
+
     except Exception as e:
         traceback.print_exc()
         if 'sentry_dsn' in config:

@@ -16,7 +16,7 @@ class EmergencyMeeting(Endpoint):
         font = self.assets.get_font('assets/fonts/medium.woff', size=33)
         canv = ImageDraw.Draw(base)
         if len(text) >= 140:
-            text = text[:137] + "..."
+            text = f"{text[:137]}..."
         text = wrap(font, text, 750)
         render_text_with_emoji(base, canv, (0, 0), text, font=font, fill='Black')
 

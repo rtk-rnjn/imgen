@@ -17,7 +17,7 @@ class Airpods(Endpoint):
         left = Image.open('assets/airpods/left.gif')
         right = Image.open('assets/airpods/right.gif')
         out = []
-        for i in range(0, left.n_frames):
+        for i in range(left.n_frames):
             left.seek(i)
             right.seek(i)
             f = blank.copy().convert('RGBA')

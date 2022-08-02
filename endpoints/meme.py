@@ -49,12 +49,8 @@ class Meme(Endpoint):
 
                 last_cut = 0
                 is_last = False
-                for i in range(0, line_count):
-                    if last_cut == 0:
-                        cut = int((len(string) / line_count) * i)
-                    else:
-                        cut = int(last_cut)
-
+                for i in range(line_count):
+                    cut = int((len(string) / line_count) * i) if last_cut == 0 else int(last_cut)
                     if i < line_count - 1:
                         next_cut = int((len(string) / line_count) * (i + 1))
                     else:
@@ -62,12 +58,12 @@ class Meme(Endpoint):
                         is_last = True
 
                     # make sure we don't cut words in half
-                    if not next_cut == len(text) or not text[next_cut] == " ":
+                    if next_cut != len(text) or text[next_cut] != " ":
                         try:
                             while string[next_cut] != " ":
                                 next_cut += 1
                         except IndexError:
-                            next_cut = next_cut - 1
+                            next_cut -= 1
 
                     line = string[cut:next_cut].strip()
 
@@ -88,7 +84,7 @@ class Meme(Endpoint):
             if pos == "bottom":
                 last_y = img.height - h * (line_count + 1) - 10
 
-            for i in range(0, line_count):
+            for i in range(line_count):
                 w, h = draw.textsize(lines[i], font)
                 x = img.width / 2 - w / 2
                 y = last_y + h

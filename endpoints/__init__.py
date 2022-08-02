@@ -6,4 +6,4 @@ for endpoint in os.listdir('endpoints'):
     if endpoint[:-3] in prohibit_load or not endpoint.endswith('.py'):
         continue
 
-    __import__('endpoints.' + endpoint[:-3], globals(), locals())
+    __import__(f'endpoints.{endpoint[:-3]}', globals(), locals())

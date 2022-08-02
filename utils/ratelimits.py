@@ -37,8 +37,9 @@ class RatelimitCache(object):
 
     def __setitem__(self, key, value):
         db = get_redis()
-        old_timestamp = db.hget(f'ratelimit-cache:{self.id}:{key}', 'timestamp')
-        if old_timestamp:
+        if old_timestamp := db.hget(
+            f'ratelimit-cache:{self.id}:{key}', 'timestamp'
+        ):
             data = {'data': value, 'timestamp': old_timestamp, 'expire_time': str(self.expire_time)}
         else:
             data = {'data': value, 'timestamp': int(time() * 1000), 'expire_time': str(self.expire_time)}
@@ -60,8 +61,7 @@ class RatelimitCache(object):
         except KeyError:
             expire_time = time()
         expire = datetime.strptime(expire_time, '%H:%M:%S') - datetime(1900, 1, 1)
-        date = previous + (expire.seconds * 1000)
-        return date
+        return previous + (expire.seconds * 1000)
 
     def expires_in(self, item):
         db = get_redis()

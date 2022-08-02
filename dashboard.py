@@ -13,15 +13,15 @@ config = json.load(open('config.json'))
 dash = Blueprint('dashboard', __name__, template_folder='views', static_folder='views/assets')
 
 API_BASE_URL = 'https://discordapp.com/api'
-AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
-TOKEN_URL = API_BASE_URL + '/oauth2/token'
+AUTHORIZATION_BASE_URL = f'{API_BASE_URL}/oauth2/authorize'
+TOKEN_URL = f'{API_BASE_URL}/oauth2/token'
 
 
 def limited_access(func):
     def wrapper(*args, **kwargs):
         if 'user' not in session:
             discord = make_session(token=session.get('oauth2_token'))
-            user = discord.get(API_BASE_URL + '/users/@me').json()
+            user = discord.get(f'{API_BASE_URL}/users/@me').json()
 
             if 'id' not in user:
                 return redirect(url_for('.login'))
@@ -36,7 +36,10 @@ def limited_access(func):
 
 @dash.route('/login')
 def login():
-    discord = make_session(scope='identify email', redirect_uri=request.host_url + 'callback')
+    discord = make_session(
+        scope='identify email', redirect_uri=f'{request.host_url}callback'
+    )
+
     authorization_url, state = discord.authorization_url(AUTHORIZATION_BASE_URL)
     return redirect(authorization_url)
 
@@ -52,7 +55,11 @@ def callback():
     if request.values.get('error'):
         return request.values['error']
 
-    discord = make_session(state=session.get('oauth2_state'), redirect_uri=request.host_url + 'callback')
+    discord = make_session(
+        state=session.get('oauth2_state'),
+        redirect_uri=f'{request.host_url}callback',
+    )
+
     token = discord.fetch_token(
         TOKEN_URL,
         client_secret=config['client_secret'],
@@ -178,11 +185,7 @@ def admin():
 def view(key_id):
     user = session['user']
 
-    if user['id'] in config['admins']:
-        admin = True
-    else:
-        admin = False
-
+    admin = user['id'] in config['admins']
     key = r.table('applications').get(key_id).run(get_db())
     key_type = 'app'
     if not key:

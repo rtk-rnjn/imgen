@@ -17,7 +17,7 @@ class Communism(Endpoint):
         img1.putalpha(96)
 
         out = []
-        for i in range(0, img2.n_frames):
+        for i in range(img2.n_frames):
             img2.seek(i)
             f = img2.copy().convert('RGBA').resize((300, 300))
             f.paste(img1, (0, 0), img1)

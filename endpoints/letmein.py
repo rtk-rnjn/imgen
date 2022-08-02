@@ -19,15 +19,15 @@ class LetMeIn(Endpoint):
     params = ['text']
 
     def generate(self, avatars, text, usernames, kwargs):
-        name = uuid.uuid4().hex + '.mp4'
+        name = f'{uuid.uuid4().hex}.mp4'
         if len(text) >= 400:
-            text = text[:400] + '...'
+            text = f'{text[:400]}...'
 
         @after_this_request
         def remove(response):  # pylint: disable=W0612
             try:
                 os.remove(name)
-            except (FileNotFoundError, OSError, PermissionError):
+            except OSError:
                 pass
 
             return response

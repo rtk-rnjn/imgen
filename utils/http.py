@@ -14,14 +14,13 @@ def get(url, **kwargs):
     if config.get('new_proxy', False):
         proxies = config.get('proxies', {})
         res = requests.get(url, proxies=proxies, **kwargs)
+    elif 'proxy_url' in config:
+        res = requests.get(config['proxy_url'],
+                           params={'url': url},
+                           headers={'Authorization': config['proxy_auth']},
+                           **kwargs)
     else:
-        if 'proxy_url' in config:
-            res = requests.get(config['proxy_url'],
-                               params={'url': url},
-                               headers={'Authorization': config['proxy_auth']},
-                               **kwargs)
-        else:
-            res = requests.get(url, **kwargs)
+        res = requests.get(url, **kwargs)
 
     if 'content-length' not in res.headers:
         raise exceptions.BadRequest(f'{url} is missing `content-length` header')

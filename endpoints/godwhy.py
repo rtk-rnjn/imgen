@@ -17,8 +17,8 @@ class GodWhy(Endpoint):
         canv = ImageDraw.Draw(base)
 
         if len(text) >= 127:
-            text = text[:124] + '...'
-        
+            text = f'{text[:124]}...'
+
         render_text_with_emoji(base, canv, (35, 560), wrap(font, text, 370), font, 'black')
 
         base = base.convert('RGB')

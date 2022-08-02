@@ -47,7 +47,7 @@ class AssetCache(object):
 
     def get_font(self, item, *args, **kwargs):
         now = time()
-        cache_unique = "{}{}{}".format(hash(item), hash(args), hash(frozenset(kwargs.items())))
+        cache_unique = f"{hash(item)}{hash(args)}{hash(frozenset(kwargs.items()))}"
         if self._last_gc + self._gc_interval < now:
             self._gc_loop.call_soon_threadsafe(self._run_gc, self)
             self._last_gc = now

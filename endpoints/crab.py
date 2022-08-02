@@ -18,13 +18,13 @@ class Crab(Endpoint):
     params = ['text']
 
     def generate(self, avatars, text, usernames, kwargs):
-        name = uuid.uuid4().hex + '.mp4'
+        name = f'{uuid.uuid4().hex}.mp4'
 
         @after_this_request
         def remove(response):  # pylint: disable=W0612
             try:
                 os.remove(name)
-            except (FileNotFoundError, OSError, PermissionError):
+            except OSError:
                 pass
 
             return response
@@ -37,10 +37,10 @@ class Crab(Endpoint):
         clip = VideoFileClip("assets/crab/template.mp4")
         text = TextClip(t[0], fontsize=48, color='white', font='Symbola')
         text2 = TextClip("____________________", fontsize=48, color='white', font='Verdana')\
-            .set_position(("center", 210)).set_duration(15.4)
+                .set_position(("center", 210)).set_duration(15.4)
         text = text.set_position(("center", 200)).set_duration(15.4)
         text3 = TextClip(t[1], fontsize=48, color='white', font='Verdana')\
-            .set_position(("center", 270)).set_duration(15.4)
+                .set_position(("center", 270)).set_duration(15.4)
 
         video = CompositeVideoClip([clip, text.crossfadein(1), text2.crossfadein(1), text3.crossfadein(1)]).set_duration(15.4)
 

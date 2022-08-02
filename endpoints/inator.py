@@ -17,12 +17,7 @@ class Inator(Endpoint):
         canv = ImageDraw.Draw(base)
         render_text_with_emoji(base, canv, (370, 0), wrap(font, text, 340), font, 'black')
         vowels = ['i', 'y', 'e', 'a', 'u', 'o']
-        for vowel in vowels:
-            if text.endswith(vowel):
-                ending = 'nator'
-                break
-        else:
-            ending = 'inator'
+        ending = next(('nator' for vowel in vowels if text.endswith(vowel)), 'inator')
         render_text_with_emoji(base, canv, (370, 380), wrap(font, text + ending, 335), font, 'black')
         base = base.convert('RGB')
         b = BytesIO()

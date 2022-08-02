@@ -17,7 +17,7 @@ class America(Endpoint):
         img1.putalpha(128)
 
         out = []
-        for i in range(0, img2.n_frames):
+        for i in range(img2.n_frames):
             img2.seek(i)
             f = img2.copy().convert('RGBA').resize((480, 480))
             f.paste(img1, (0, 0), img1)
