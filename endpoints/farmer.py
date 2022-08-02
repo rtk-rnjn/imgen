@@ -19,10 +19,10 @@ class Farmer(Endpoint):
         clouds, farmer = text.replace(', ', ',').split(',', 1)
 
         if len(clouds) >= 150:
-            clouds = clouds[:147] + '...'
+            clouds = f'{clouds[:147]}...'
 
         if len(farmer) >= 100:
-            farmer = farmer[:97] + '...'
+            farmer = f'{farmer[:97]}...'
         render_text_with_emoji(base, canv, (50, 300), wrap(font, clouds, 580), font, 'white')
         render_text_with_emoji(base, canv, (50, 825), wrap(font, farmer, 580), font, 'white')
 

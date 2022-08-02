@@ -20,10 +20,12 @@ class ExpandDong(Endpoint):
         base = Image.new('RGBA', (1920, lines * 128), (255, 255, 255, 0))
         line = 0
         pos = 0
-        chars = dict()
-        for i in listdir('assets/expanddong'):
-            if i.endswith('.bmp'):
-                chars[i[0]] = Image.open(f'assets/expanddong/{i}')
+        chars = {
+            i[0]: Image.open(f'assets/expanddong/{i}')
+            for i in listdir('assets/expanddong')
+            if i.endswith('.bmp')
+        }
+
         for word in text.split(' '):
             if 15 - pos <= len(word):
                 pos = 0

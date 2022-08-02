@@ -4,7 +4,7 @@ from utils.db import get_redis
 class FixedList():
     def __init__(self, name='none', maximum_item_count: int = 10):
         self.max_items = maximum_item_count
-        self.name = name + ':list'
+        self.name = f'{name}:list'
 
     def append(self, *items):
         get_redis().rpush(self.name, *items)
@@ -16,8 +16,6 @@ class FixedList():
         return get_redis().llen(self.name)
 
     def sum(self):
-        a = list()
         b = get_redis().lrange(self.name, 0, 20)
-        for c in b:
-            a.append(float(c))
+        a = [float(c) for c in b]
         return sum(a)/len(a)

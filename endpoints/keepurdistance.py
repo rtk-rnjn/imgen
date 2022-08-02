@@ -19,7 +19,7 @@ class KeepUrDistance(Endpoint):
         text = text.upper()
 
         if len(text) >= 30:
-            text  = text[:27] + '...'
+            text = f'{text[:27]}...'
         render_text_with_emoji(base, canv, (92, 660), wrap(font, text, 440), font, 'white')
 
         base = base.convert('RGB')

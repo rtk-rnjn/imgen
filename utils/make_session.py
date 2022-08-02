@@ -11,8 +11,8 @@ config = json.load(open('config.json'))
 CLIENT_ID = config['client_id']
 CLIENT_SECRET = config['client_secret']
 API_BASE_URL = 'https://discordapp.com/api/'
-AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
-TOKEN_URL = API_BASE_URL + '/oauth2/token'
+AUTHORIZATION_BASE_URL = f'{API_BASE_URL}/oauth2/authorize'
+TOKEN_URL = f'{API_BASE_URL}/oauth2/token'
 
 
 def token_updater(token):
